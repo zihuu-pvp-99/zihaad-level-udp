@@ -1,0 +1,15 @@
+httpx
+google-play-scraper
+pycryptodome
+protobuf-decoder
+protobuf
+requests
+aiohttp
+aiohttp
+crypto
+google-play-scraper
+httpx
+protobuf
+protobuf-decoder
+pycryptodome
+requests

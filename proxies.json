@@ -1,0 +1,10 @@
+{
+  "enabled": false,
+  "rotation": "round_robin",
+  "notes": [
+    "Add only proxies you own or are authorized to use.",
+    "Supported URL schemes: http://, https://, socks5://, socks5h://.",
+    "The pool applies to the TCP gateway. UDP match traffic stays direct unless a UDP relay is implemented."
+  ],
+  "proxies": []
+}
