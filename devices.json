@@ -24,44 +24,5 @@
         "memory": 3813,
         "processor_details": "ARM64 FP ASIMD AES VMH | 2483 | 11",
         "client_ip": "164.44.243.73"
-    },
-    "4243740157": {
-        "unique_device_id": "Google|c015b266-d53d-4464-86a1-268288083434",
-        "brand": "Samsung",
-        "model": "SM-G998B",
-        "gpu_renderer": "Adreno (TM) 660",
-        "system_software": "Android OS 12 / API-31",
-        "screen_width": 720,
-        "screen_height": 2400,
-        "screen_dpi": "363",
-        "memory": 3988,
-        "processor_details": "ARM64 FP ASIMD AES VMH | 2382 | 7",
-        "client_ip": "168.60.214.218"
-    },
-    "7232418126": {
-        "unique_device_id": "Google|716778ce-40e2-444a-91f6-239ad906760f",
-        "brand": "Realme",
-        "model": "RMX3700",
-        "gpu_renderer": "Mali-G710",
-        "system_software": "Android OS 14 / API-34",
-        "screen_width": 1080,
-        "screen_height": 3200,
-        "screen_dpi": "305",
-        "memory": 3947,
-        "processor_details": "ARM64 FP ASIMD AES VMH | 2615 | 12",
-        "client_ip": "158.10.179.163"
-    },
-    "4260028968": {
-        "unique_device_id": "Google|9eac1e12-0347-4ee3-a890-95d124b3699d",
-        "brand": "OnePlus",
-        "model": "CPH2451",
-        "gpu_renderer": "Adreno (TM) 740",
-        "system_software": "Android OS 13 / API-33",
-        "screen_width": 1080,
-        "screen_height": 3200,
-        "screen_dpi": "356",
-        "memory": 4626,
-        "processor_details": "ARM64 FP ASIMD AES VMH | 2933 | 9",
-        "client_ip": "183.116.107.36"
     }
 }
