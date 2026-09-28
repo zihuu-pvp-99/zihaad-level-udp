@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080b14">
+    <title>ZIHAD FF // LEVEL UP CONTROL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080b14;
+            --panel: rgba(16, 21, 34, .82);
+            --panel-solid: #101522;
+            --panel-soft: #0d121e;
+            --line: rgba(148, 163, 184, .14);
+            --line-strong: rgba(148, 163, 184, .25);
+            --text: #f5f7fb;
+            --muted: #8b98ad;
+            --dim: #5e6b80;
+            --cyan: #6ee7f9;
+            --blue: #6ea8fe;
+            --violet: #ad8cff;
+            --green: #58e6a5;
+            --amber: #f6c667;
+            --red: #ff7188;
+            --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+            --radius: 18px;
+        }
+
+        * { box-sizing: border-box; }
+        html { min-width: 320px; background: var(--bg); }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(800px 480px at 83% -10%, rgba(84, 117, 255, .18), transparent 67%),
+                radial-gradient(600px 460px at -5% 45%, rgba(31, 190, 202, .08), transparent 65%),
+                var(--bg);
+            font: 14px/1.5 "DM Sans", sans-serif;
+        }
+        button, input, select, textarea { font: inherit; }
+        button { border: 0; }
+        .shell { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 244px;
+            flex: 0 0 244px;
+            display: flex;
+            flex-direction: column;
+            padding: 25px 16px 18px;
+            border-right: 1px solid var(--line);
+            background: rgba(7, 10, 18, .64);
+        }
+        .brand { display: flex; gap: 12px; align-items: center; padding: 0 10px 30px; }
+        .brand-mark {
+            width: 38px; height: 38px; display: grid; place-items: center;
+            border-radius: 12px; color: #07121a; font-size: 18px; font-weight: 700;
+            background: linear-gradient(140deg, var(--cyan), var(--blue));
+            box-shadow: 0 0 28px rgba(110, 231, 249, .22);
+        }
+        .brand h1 { margin: 0; font: 700 15px/1 "Space Grotesk", sans-serif; letter-spacing: .07em; }
+        .brand p { margin: 5px 0 0; color: var(--dim); font: 10px "JetBrains Mono", monospace; letter-spacing: .1em; }
+        .nav-label { padding: 0 12px 9px; color: var(--dim); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+        .nav { display: grid; gap: 5px; }
+        .nav a {
+            display: flex; align-items: center; gap: 11px; padding: 11px 12px;
+            color: var(--muted); border: 1px solid transparent; border-radius: 11px;
+            text-decoration: none; transition: .2s ease;
+        }
+        .nav a:hover, .nav a.active { color: var(--text); background: rgba(110, 231, 249, .07); border-color: rgba(110, 231, 249, .12); }
+        .nav a.active { box-shadow: inset 3px 0 var(--cyan); }
+        .nav-icon { width: 18px; text-align: center; color: var(--cyan); font-size: 15px; }
+        .sidebar-spacer { flex: 1; }
+        .operator-card { padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, rgba(25, 36, 57, .66), rgba(13, 17, 28, .72)); }
+        .operator-title { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
+        .operator-title b { color: var(--text); font-weight: 600; }
+        .operator-status { display: flex; gap: 7px; align-items: center; margin-top: 13px; color: var(--green); font-size: 12px; font-weight: 600; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 13%, transparent); }
+        .side-meta { margin-top: 7px; color: var(--dim); font: 10px "JetBrains Mono", monospace; }
+        .main { width: 100%; min-width: 0; padding: 25px 30px 35px; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 25px; }
+        .eyebrow { margin: 0 0 5px; color: var(--cyan); font: 600 10px "JetBrains Mono", monospace; letter-spacing: .18em; text-transform: uppercase; }
+        .page-title { margin: 0; font: 700 clamp(24px, 3vw, 32px)/1.08 "Space Grotesk", sans-serif; letter-spacing: -.04em; }
+        .page-subtitle { margin: 8px 0 0; color: var(--muted); }
+        .top-actions { display: flex; align-items: center; gap: 10px; }
+        .pill, .button {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            min-height: 38px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px;
+            color: var(--muted); background: rgba(255, 255, 255, .03); cursor: pointer; transition: .2s ease;
+        }
+        .pill { min-height: 30px; border-radius: 99px; padding: 0 11px; font: 11px "JetBrains Mono", monospace; }
+        .pill.live { color: var(--green); border-color: rgba(88, 230, 165, .2); background: rgba(88, 230, 165, .07); }
+        .button:hover { color: var(--text); border-color: var(--line-strong); background: rgba(255, 255, 255, .07); transform: translateY(-1px); }
+        .button.primary { color: #07121a; border-color: transparent; background: linear-gradient(135deg, var(--cyan), var(--blue)); font-weight: 700; }
+        .button.success { color: #061c14; border-color: transparent; background: linear-gradient(135deg, #58e6a5, #41c7a1); font-weight: 700; }
+        .button.stop { color: #fff; border-color: rgba(255, 113, 136, .35); background: rgba(255, 113, 136, .12); }
+        .button.stop:hover { color: #fff; background: rgba(255, 113, 136, .22); }
+        .button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+        .button.danger:hover { color: var(--red); border-color: rgba(255, 113, 136, .35); background: rgba(255, 113, 136, .08); }
+        .hero {
+            position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: space-between;
+            min-height: 176px; margin-bottom: 18px; padding: 28px; border: 1px solid var(--line);
+            border-radius: var(--radius); background: linear-gradient(110deg, rgba(17, 31, 48, .95), rgba(17, 22, 41, .86));
+            box-shadow: var(--shadow);
+        }
+        .hero::after { content: ""; position: absolute; width: 330px; height: 330px; right: 8%; top: -190px; border-radius: 50%; border: 1px solid rgba(110, 231, 249, .14); box-shadow: 0 0 0 28px rgba(110, 231, 249, .025), 0 0 0 56px rgba(110, 231, 249, .02); }
+        .hero-copy { position: relative; z-index: 1; max-width: 570px; }
+        .hero-kicker { color: var(--amber); font: 600 10px "JetBrains Mono", monospace; letter-spacing: .13em; text-transform: uppercase; }
+        .hero h2 { margin: 9px 0 7px; font: 700 clamp(22px, 3vw, 30px)/1.1 "Space Grotesk", sans-serif; letter-spacing: -.035em; }
+        .hero p { margin: 0; color: var(--muted); }
+        .hero-badges { position: relative; z-index: 1; display: flex; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+        .hero-badge { padding: 8px 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 10px; background: rgba(0, 0, 0, .16); font: 11px "JetBrains Mono", monospace; }
+        .hero-badge strong { display: block; margin-top: 3px; color: var(--text); font-size: 13px; }
+        .stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 13px; margin-bottom: 18px; }
+        .stat { padding: 17px; border: 1px solid var(--line); border-radius: 15px; background: var(--panel); }
+        .stat-head { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 12px; }
+        .stat-symbol { color: var(--cyan); font-size: 15px; }
+        .stat-value { margin-top: 10px; font: 700 24px/1 "Space Grotesk", sans-serif; letter-spacing: -.04em; }
+        .stat-foot { display: flex; gap: 5px; align-items: center; margin-top: 8px; color: var(--dim); font-size: 11px; }
+        .stat-foot.good { color: var(--green); }
+        .workspace { display: block; }
+        .control-card { margin-bottom: 18px; }
+        .control-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) repeat(3, minmax(130px, .7fr)); gap: 10px; }
+        .control-item { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: rgba(0, 0, 0, .14); }
+        .control-item label { display: block; margin-bottom: 7px; color: var(--dim); font: 10px "JetBrains Mono", monospace; letter-spacing: .05em; text-transform: uppercase; }
+        .control-item strong { display: block; color: var(--text); font: 600 13px "JetBrains Mono", monospace; }
+        .mode-select { width: 100%; padding: 8px 10px; color: var(--text); border: 1px solid var(--line); border-radius: 8px; outline: none; background: #111a29; }
+        .mode-select:focus { border-color: var(--cyan); }
+        .control-note { margin-top: 12px; color: var(--dim); font-size: 11px; }
+        .device-card { margin-top: 18px; }
+        .device-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+        .device-item { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: rgba(0, 0, 0, .14); }
+        .device-item strong { display: block; color: var(--text); font: 600 13px "Space Grotesk", sans-serif; }
+        .device-item span { display: block; margin-top: 5px; color: var(--muted); font: 10px "JetBrains Mono", monospace; }
+        .device-item small { display: block; margin-top: 8px; color: var(--dim); font-size: 10px; }
+        .card { min-width: 0; padding: 19px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: 0 12px 35px rgba(0, 0, 0, .1); }
+        .card-head { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 17px; }
+        .card-title { margin: 0; font: 600 15px "Space Grotesk", sans-serif; }
+        .card-caption { margin: 3px 0 0; color: var(--dim); font-size: 11px; }
+        .card-actions { display: flex; align-items: center; gap: 7px; }
+        .mini-button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; background: transparent; cursor: pointer; font-size: 11px; }
+        .mini-button:hover { color: var(--text); border-color: var(--line-strong); background: rgba(255, 255, 255, .05); }
+        .account-list { display: grid; gap: 10px; }
+        .account {
+            display: grid; grid-template-columns: minmax(175px, 1.2fr) repeat(3, minmax(68px, .55fr)) auto;
+            gap: 13px; align-items: center; padding: 13px; border: 1px solid var(--line); border-radius: 12px;
+            background: rgba(5, 9, 16, .3); transition: .2s ease;
+        }
+        .account:hover { border-color: rgba(110, 231, 249, .23); background: rgba(20, 31, 49, .45); }
+        .identity { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .avatar { display: grid; flex: 0 0 35px; place-items: center; width: 35px; height: 35px; border-radius: 10px; color: var(--cyan); background: linear-gradient(135deg, rgba(110, 231, 249, .18), rgba(110, 168, 254, .06)); border: 1px solid rgba(110, 231, 249, .16); font-weight: 700; }
+        .identity-name { overflow: hidden; color: var(--text); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+        .identity-id { margin-top: 2px; color: var(--dim); font: 10px "JetBrains Mono", monospace; }
+        .cell-label { display: block; color: var(--dim); font-size: 10px; }
+        .cell-value { display: block; margin-top: 2px; color: var(--muted); font: 600 12px "JetBrains Mono", monospace; }
+        .cell-value.accent { color: var(--green); }
+        .status { display: inline-flex; align-items: center; gap: 5px; width: max-content; padding: 4px 7px; border-radius: 99px; font: 10px "JetBrains Mono", monospace; }
+        .status.online, .status.in-match { color: var(--green); background: rgba(88, 230, 165, .08); }
+        .status.searching, .status.connecting { color: var(--cyan); background: rgba(110, 231, 249, .08); }
+        .status.in-match { color: var(--cyan); background: rgba(110, 231, 249, .1); border-color: rgba(110, 231, 249, .25); }
+        .status.bermuda-ready { color: var(--violet); background: rgba(173, 140, 255, .08); }
+        .status.paused { color: var(--amber); background: rgba(246, 198, 103, .08); }
+        .status.error, .status.offline { color: var(--red); background: rgba(255, 113, 136, .08); }
+        .status .dot { width: 5px; height: 5px; box-shadow: none; }
+        .row-actions { display: flex; gap: 5px; justify-content: flex-end; }
+        .icon-button { display: grid; place-items: center; width: 29px; height: 29px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; background: transparent; cursor: pointer; }
+        .icon-button:hover { color: var(--cyan); border-color: rgba(110, 231, 249, .4); }
+        .icon-button.danger:hover { color: var(--red); border-color: rgba(255, 113, 136, .4); }
+        .empty { display: grid; place-items: center; min-height: 215px; padding: 28px; color: var(--muted); text-align: center; border: 1px dashed var(--line-strong); border-radius: 12px; }
+        .empty-mark { margin-bottom: 10px; color: var(--cyan); font-size: 26px; }
+        .terminal-card { display: flex; flex-direction: column; min-height: 690px; margin-top: 18px; }
+        .terminal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .terminal-title { display: flex; align-items: center; gap: 8px; font: 600 15px "Space Grotesk", sans-serif; }
+        .terminal-title span { color: var(--green); }
+        .terminal-tools { display: flex; gap: 6px; }
+        .terminal { display: flex; flex: 1; flex-direction: column; min-height: 610px; overflow: hidden; border: 1px solid rgba(88, 230, 165, .14); border-radius: 12px; background: #070b11; box-shadow: inset 0 0 55px rgba(88, 230, 165, .025); }
+        .terminal-bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, .07); background: rgba(255, 255, 255, .025); }
+        .terminal-light { width: 7px; height: 7px; border-radius: 50%; }
+        .terminal-light.red { background: #ff6b7c; } .terminal-light.yellow { background: #f7c95d; } .terminal-light.green { background: #62dfa1; }
+        .terminal-path { margin-left: 5px; color: var(--dim); font: 10px "JetBrains Mono", monospace; }
+        .log-filter { margin-left: auto; color: var(--green); background: transparent; border: 0; outline: 0; font: 10px "JetBrains Mono", monospace; }
+        .logs { flex: 1; overflow: auto; padding: 16px; font: 11px/1.85 "JetBrains Mono", monospace; scroll-behavior: smooth; }
+        .log-line { display: grid; grid-template-columns: 52px 48px 1fr; gap: 7px; padding: 2px 0; word-break: break-word; }
+        .log-time { color: #536074; } .log-tag { color: var(--cyan); } .log-tag.success { color: var(--green); } .log-tag.warning { color: var(--amber); } .log-tag.error { color: var(--red); }
+        .log-message { color: #bdc8d9; }
+        .terminal-foot { display: flex; justify-content: space-between; gap: 8px; padding: 9px 12px; border-top: 1px solid rgba(255, 255, 255, .07); color: var(--dim); font: 10px "JetBrains Mono", monospace; }
+        .match-strip { grid-column: 1 / -1; display: grid; grid-template-columns: 1.5fr .6fr 1fr; gap: 10px; padding: 10px 0 2px; border-top: 1px solid rgba(255, 255, 255, .06); }
+        .match-strip span { display: block; color: var(--dim); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+        .match-strip strong { display: block; margin-top: 3px; color: var(--muted); font: 600 11px "JetBrains Mono", monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .match-strip strong.live { color: var(--green); }
+        .match-strip strong.searching { color: var(--cyan); }
+        .match-strip strong.match { color: var(--cyan); text-shadow: 0 0 12px rgba(110, 231, 249, .28); }
+        .account-progress { grid-column: 1 / -1; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .06); }
+        .progress-head, .progress-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .progress-head { color: var(--dim); font: 10px "JetBrains Mono", monospace; letter-spacing: .04em; text-transform: uppercase; }
+        .progress-head strong { color: var(--cyan); font-weight: 600; }
+        .progress-track { height: 7px; margin: 8px 0 6px; overflow: hidden; border-radius: 99px; background: rgba(255, 255, 255, .08); }
+        .progress-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--green)); box-shadow: 0 0 14px rgba(110, 231, 249, .25); transition: width .35s ease; }
+        .progress-meta { color: var(--dim); font: 10px "JetBrains Mono", monospace; }
+        .progress-meta strong { color: var(--muted); font-weight: 500; }
+        .network-card { margin-top: 18px; }
+        .network-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .network-item { padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: rgba(0, 0, 0, .13); }
+        .network-item span { display: block; color: var(--dim); font-size: 10px; }
+        .network-item strong { display: block; margin-top: 5px; color: var(--text); font: 600 12px "JetBrains Mono", monospace; }
+        .modal-backdrop { position: fixed; inset: 0; z-index: 20; display: none; place-items: center; padding: 20px; background: rgba(2, 5, 10, .76); backdrop-filter: blur(12px); }
+        .modal-backdrop.open { display: grid; }
+        .modal { width: min(100%, 455px); padding: 22px; border: 1px solid var(--line-strong); border-radius: 18px; background: #111827; box-shadow: 0 30px 100px rgba(0, 0, 0, .55); }
+        .modal-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .modal-head h2 { margin: 0; font: 600 19px "Space Grotesk", sans-serif; }
+        .modal-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+        .close { color: var(--muted); background: transparent; cursor: pointer; font-size: 20px; }
+        .field { margin-top: 14px; }
+        .field label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 11px; font-weight: 600; }
+        .input { width: 100%; padding: 11px 12px; color: var(--text); border: 1px solid var(--line); border-radius: 9px; outline: none; background: rgba(0, 0, 0, .2); }
+        .input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(110, 231, 249, .1); }
+        .modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
+        .toast { position: fixed; z-index: 30; right: 22px; bottom: 22px; max-width: 350px; padding: 12px 15px; color: var(--text); border: 1px solid var(--line-strong); border-radius: 11px; background: #151d2d; box-shadow: var(--shadow); transform: translateY(20px); opacity: 0; pointer-events: none; transition: .25s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: rgba(88, 230, 165, .35); } .toast.error { border-color: rgba(255, 113, 136, .35); }
+        @media (max-width: 1180px) { .sidebar { width: 210px; flex-basis: 210px; } .main { padding: 24px 20px; } .account { grid-template-columns: minmax(160px, 1.1fr) repeat(3, minmax(55px, .6fr)) auto; gap: 9px; } .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        @media (max-width: 900px) { .sidebar { display: none; } .terminal-card { min-height: 540px; } .terminal { min-height: 460px; } }
+        @media (max-width: 900px) { .control-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 640px) { .main { padding: 18px 13px 25px; } .topbar { align-items: flex-start; flex-direction: column; } .top-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; } .hero { align-items: flex-start; flex-direction: column; gap: 22px; padding: 21px; } .hero-badges { justify-content: flex-start; } .stats { grid-template-columns: repeat(2, 1fr); } .account { grid-template-columns: 1fr 1fr; } .identity { grid-column: 1 / -1; } .row-actions { justify-content: flex-start; } .network-grid { grid-template-columns: 1fr; } .control-grid { grid-template-columns: 1fr; } .match-strip { grid-template-columns: 1fr 1fr; } .match-strip > :last-child { grid-column: 1 / -1; } }
+    </style>
+</head>
+<body>
+<div class="shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">↯</div>
+            <div><h1>ZIHAD FF</h1><p>LEVEL UP WEB</p></div>
+        </div>
+        <div class="nav-label">Workspace</div>
+        <nav class="nav">
+            <a class="active" href="#overview"><span class="nav-icon">◈</span> Overview</a>
+            <a href="#accounts"><span class="nav-icon">◎</span> Accounts</a>
+            <a href="#terminal"><span class="nav-icon">›_</span> Terminal</a>
+            <a href="#network"><span class="nav-icon">⌁</span> Network</a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="operator-card">
+            <div class="operator-title"><b>Operator mode</b><span class="pill">VIP</span></div>
+            <div class="operator-status"><span class="dot"></span><span id="side-status">Connected</span></div>
+            <div class="side-meta">polling every 2.5s · secure session</div>
+        </div>
+    </aside>
+
+    <main class="main" id="overview">
+        <div class="topbar">
+            <div>
+                <p class="eyebrow">Zihad FF / live operations</p>
+                <h1 class="page-title">ZIHAD LEVEL UP</h1>
+                <p class="page-subtitle">Premium Free Fire level-up operations with live UDP activity and account control.</p>
+            </div>
+            <div class="top-actions">
+                <span class="pill live"><span class="dot"></span><span id="connection-text">LIVE</span></span>
+                <button class="button" id="refresh-btn" type="button">↻ <span>Refresh</span></button>
+                <button class="button primary" id="add-btn" type="button">＋ Add account</button>
+            </div>
+        </div>
+
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="hero-kicker">Zihad FF / Lone Wolf engine / ready</div>
+                <h2>Level up. Stay in control.</h2>
+                <p>Fast account visibility with real-time UDP activity, EXP tracking and a terminal stream built for Zihad operators.</p>
+            </div>
+            <div class="hero-badges">
+                <div class="hero-badge">Engine<strong>ZIHAD FF / LW-UDP</strong></div>
+                <div class="hero-badge">Last sync<strong id="last-sync">waiting…</strong></div>
+            </div>
+        </section>
+
+        <section class="card control-card" aria-label="Bot controls">
+            <div class="card-head">
+                <div><h2 class="card-title">Bot control center</h2><p class="card-caption">Start, stop and switch the active game adapter without restarting the dashboard.</p></div>
+                <span class="pill" id="runtime-state">STOPPED</span>
+            </div>
+            <div class="control-grid">
+                <div class="control-item">
+                    <label for="game-mode">ACTIVE GAME MODE</label>
+                    <select class="mode-select" id="game-mode">
+                        <option value="lone_wolf">Lone Wolf · live matcher</option>
+                        <option value="bermuda">Bermuda · session adapter</option>
+                    </select>
+                </div>
+                <div class="control-item"><label>RUN STATE</label><strong id="control-state">Stopped</strong></div>
+                <div class="control-item"><label>WORKER QUEUE</label><strong id="control-workers">0 workers</strong></div>
+                <div class="control-item" style="display:flex;align-items:flex-end;gap:8px">
+                    <button class="button success" id="run-bot" type="button">▶ Run bot</button>
+                    <button class="button stop" id="stop-bot" type="button">■ Stop</button>
+                </div>
+            </div>
+            <p class="control-note" id="mode-note">Lone Wolf matchmaking is enabled for the active account fleet.</p>
+        </section>
+
+        <section class="stats" aria-label="System metrics">
+            <div class="stat"><div class="stat-head"><span>Active accounts</span><span class="stat-symbol">◎</span></div><div class="stat-value" id="stat-accounts">0</div><div class="stat-foot"><span id="stat-online">0 online</span><span>·</span><span id="stat-workers">0 workers</span></div></div>
+            <div class="stat"><div class="stat-head"><span>Matches started</span><span class="stat-symbol">↗</span></div><div class="stat-value" id="stat-started">0</div><div class="stat-foot"><span id="stat-start-rate">0 / hour</span><span>queued</span></div></div>
+            <div class="stat"><div class="stat-head"><span>UDP matches</span><span class="stat-symbol">⌁</span></div><div class="stat-value" id="stat-udp">0</div><div class="stat-foot good">● live traffic</div></div>
+            <div class="stat"><div class="stat-head"><span>EXP gained</span><span class="stat-symbol">↗</span></div><div class="stat-value" id="stat-exp">+0</div><div class="stat-foot"><span id="stat-matches">0 matches</span><span>completed</span></div></div>
+            <div class="stat"><div class="stat-head"><span>Uptime</span><span class="stat-symbol">◷</span></div><div class="stat-value" id="stat-uptime">00:00:00</div><div class="stat-foot"><span>system runtime</span></div></div>
+        </section>
+
+        <div class="workspace">
+            <section class="card" id="accounts">
+                <div class="card-head">
+                    <div><h2 class="card-title">Account fleet</h2><p class="card-caption">Live profile and match performance</p></div>
+                    <div class="card-actions"><span class="pill" id="account-count">0 loaded</span><button class="mini-button" id="account-refresh" type="button">↻ Sync</button></div>
+                </div>
+                <div class="account-list" id="accounts-container">
+                    <div class="empty"><div><div class="empty-mark">◌</div><div>Loading account fleet…</div></div></div>
+                </div>
+            </section>
+
+            <section class="card terminal-card" id="terminal">
+                <div class="terminal-head">
+                    <div class="terminal-title"><span>›_</span> Operator terminal</div>
+                    <div class="terminal-tools"><button class="mini-button" id="copy-logs" type="button">Copy</button><button class="mini-button" id="clear-logs" type="button">Clear</button></div>
+                </div>
+                <div class="terminal">
+                    <div class="terminal-bar"><span class="terminal-light red"></span><span class="terminal-light yellow"></span><span class="terminal-light green"></span><span class="terminal-path">zihad-level-up / runtime.log</span><select class="log-filter" id="log-filter" aria-label="Log filter"><option value="all">ALL</option><option value="success">SUCCESS</option><option value="warning">WARNING</option><option value="error">ERROR</option></select></div>
+                    <div class="logs" id="log-stream"><div class="log-line"><span class="log-time">--:--:--</span><span class="log-tag">INFO</span><span class="log-message">Waiting for runtime events…</span></div></div>
+                    <div class="terminal-foot"><span id="log-count">0 events</span><span>auto-scroll on</span></div>
+                </div>
+            </section>
+        </div>
+
+        <section class="card network-card" id="network">
+            <div class="card-head"><div><h2 class="card-title">Network telemetry</h2><p class="card-caption">UDP transport and worker health</p></div><span class="pill live">● nominal</span></div>
+            <div class="network-grid">
+                <div class="network-item"><span>UDP pipeline</span><strong id="network-udp">STANDBY</strong></div>
+                <div class="network-item"><span>Active workers</span><strong id="network-workers">0</strong></div>
+                <div class="network-item"><span>Service uptime</span><strong id="network-uptime">00:00:00</strong></div>
+            </div>
+        </section>
+
+        <section class="card device-card" id="devices">
+            <div class="card-head">
+                <div><h2 class="card-title">Device profiles</h2><p class="card-caption">Persistent one-account / one-device mapping used during login.</p></div>
+                <div class="card-actions"><span class="pill" id="device-count">0 profiles</span><button class="mini-button" id="device-refresh" type="button">↻ Sync</button><button class="mini-button" id="add-device" type="button">＋ Add profile</button></div>
+            </div>
+            <div class="device-grid" id="device-container"><div class="empty"><div>Loading device profiles…</div></div></div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-head"><div><h2 id="modal-title">Add account</h2><p>Save credentials and start a worker session.</p></div><button class="close" id="close-modal" type="button" aria-label="Close">×</button></div>
+        <form id="account-form">
+            <div class="field"><label for="account-type">AUTHENTICATION TYPE</label><select class="input" id="account-type"><option value="guest">Guest UID + password</option><option value="token">Access token</option></select></div>
+            <div id="guest-fields"><div class="field"><label for="account-uid">GUEST UID</label><input class="input" id="account-uid" autocomplete="off" placeholder="Enter account UID"></div><div class="field"><label for="account-password">PASSWORD / SECRET</label><input class="input" id="account-password" type="password" autocomplete="off" placeholder="Enter password"></div></div>
+            <div class="field" id="token-field" style="display:none"><label for="account-token">ACCESS TOKEN</label><textarea class="input" id="account-token" rows="3" autocomplete="off" placeholder="Paste access token"></textarea></div>
+            <div class="modal-foot"><button class="button" id="cancel-modal" type="button">Cancel</button><button class="button primary" type="submit">Save & start</button></div>
+        </form>
+    </div>
+</div>
+<div class="modal-backdrop" id="device-modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="device-modal-title">
+        <div class="modal-head"><div><h2 id="device-modal-title">Add device profile</h2><p>Attach a stable Android profile to an account ID.</p></div><button class="close" id="close-device-modal" type="button" aria-label="Close">×</button></div>
+        <form id="device-form">
+            <div class="field"><label for="device-account">ACCOUNT ID</label><input class="input" id="device-account" autocomplete="off" placeholder="In-game account ID"></div>
+            <div class="field"><label for="device-brand">BRAND</label><input class="input" id="device-brand" autocomplete="off" placeholder="Samsung"></div>
+            <div class="field"><label for="device-model">MODEL</label><input class="input" id="device-model" autocomplete="off" placeholder="SM-S928B"></div>
+            <div class="field"><label for="device-os">ANDROID VERSION</label><input class="input" id="device-os" autocomplete="off" value="Android OS 14 / API-34"></div>
+            <div class="modal-foot"><button class="button" id="cancel-device-modal" type="button">Cancel</button><button class="button primary" type="submit">Save profile</button></div>
+        </form>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+    const $ = (selector) => document.querySelector(selector);
+    let currentLogs = [];
+    let lastLogCursor = 0;
+    let toastTimer;
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'}[char]));
+    }
+    function formatNumber(value) { return Number(value || 0).toLocaleString(); }
+    function formatUptime(seconds) {
+        const total = Math.max(0, Number(seconds || 0));
+        return [Math.floor(total / 3600), Math.floor(total % 3600 / 60), total % 60].map((n) => String(n).padStart(2, '0')).join(':');
+    }
+    function showToast(message, type = 'success') {
+        const el = $('#toast'); el.textContent = message; el.className = `toast show ${type}`;
+        clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.className = 'toast'; }, 3200);
+    }
+    function setConnection(connected) {
+        $('#connection-text').textContent = connected ? 'LIVE' : 'OFFLINE';
+        $('#side-status').textContent = connected ? 'Connected' : 'Reconnecting';
+        $('#side-status').style.color = connected ? 'var(--green)' : 'var(--amber)';
+    }
+    function statusClass(status) { return String(status || 'offline').toLowerCase().replace(/[^a-z-]/g, '-'); }
+    function renderAccounts(accounts) {
+        $('#account-count').textContent = `${accounts.length} loaded`;
+        if (!accounts.length) {
+            $('#accounts-container').innerHTML = '<div class="empty"><div><div class="empty-mark">◎</div><div>No accounts are running.</div><p style="margin:6px 0 0;color:var(--dim);font-size:11px">Add an account to start the operator fleet.</p></div></div>';
+            return;
+        }
+        $('#accounts-container').innerHTML = accounts.map((acc) => {
+            const uid = escapeHtml(acc.uid);
+            const status = String(acc.status || 'OFFLINE');
+            const cls = statusClass(status);
+            const label = status.replaceAll('_', ' ');
+            const level = Number(acc.level || 1);
+            const currentExp = Number(acc.current_exp || 0);
+            const nextLevel = acc.next_level ? Number(acc.next_level) : null;
+            const nextLevelExp = acc.next_level_exp == null ? null : Number(acc.next_level_exp);
+            const expToNext = Number(acc.exp_to_next_level || 0);
+            const progress = Math.max(0, Math.min(100, Number(acc.level_progress_pct || 0)));
+            const progressTarget = nextLevel ? `LV ${formatNumber(nextLevel)} · ${formatNumber(nextLevelExp)} EXP` : 'MAX LEVEL';
+            const progressRemaining = nextLevel ? `${formatNumber(expToNext)} EXP to go` : 'Progress complete';
+            const isStopped = ['OFFLINE', 'ERROR'].includes(status.toUpperCase());
+            const workerAction = isStopped
+                ? `<button class="icon-button start-account" data-uid="${uid}" title="Start account">▶</button>`
+                : `<button class="icon-button stop-account" data-uid="${uid}" title="Stop account">■</button>`;
+            const activeMatches = Number(acc.active_matches || 0);
+            const upperStatus = status.toUpperCase();
+            const activity = upperStatus === 'IN_MATCH'
+                ? `${activeMatches || 1} live UDP match${activeMatches === 1 ? '' : 'es'}`
+                : upperStatus === 'SEARCHING'
+                    ? 'Searching for a match…'
+                    : upperStatus === 'ONLINE'
+                        ? 'Online · next match queued'
+                        : upperStatus === 'BERMUDA_READY'
+                            ? 'Online · Bermuda session'
+                            : upperStatus === 'CONNECTING'
+                                ? 'Connecting to gateway…'
+                                : upperStatus === 'OFFLINE'
+                                    ? 'Worker stopped'
+                                    : upperStatus === 'ERROR'
+                                        ? 'Retrying session'
+                                        : label;
+            const activityClass = upperStatus === 'IN_MATCH' ? 'match' : upperStatus === 'SEARCHING' || upperStatus === 'CONNECTING' ? 'searching' : upperStatus === 'ONLINE' || upperStatus === 'BERMUDA_READY' ? 'live' : '';
+            const lastMatch = acc.last_match_time || acc.last_match_started || 'No match yet';
+            return `<article class="account">
+                <div class="identity"><div class="avatar">${escapeHtml(String(acc.nickname || 'P').slice(0, 1).toUpperCase())}</div><div style="min-width:0"><div class="identity-name">${escapeHtml(acc.nickname || `Player_${acc.uid}`)}</div><div class="identity-id">UID ${uid} · ${escapeHtml(acc.region || 'BD')}</div></div></div>
+                <div><span class="cell-label">STATUS</span><span class="status ${cls}"><span class="dot"></span>${escapeHtml(label)}</span></div>
+                <div><span class="cell-label">POWER LEVEL</span><span class="cell-value">LV ${formatNumber(level)}</span></div>
+                <div><span class="cell-label">EXP GAINED</span><span class="cell-value accent">+${formatNumber(acc.gained_exp)}</span></div>
+                <div class="row-actions">${workerAction}<button class="icon-button refresh-account" data-uid="${uid}" title="Refresh profile">↻</button><button class="icon-button danger delete-account" data-uid="${uid}" title="Delete account">×</button></div>
+                <div class="match-strip">
+                    <div><span>ACTIVITY</span><strong class="${activityClass}">${escapeHtml(activity)}</strong></div>
+                    <div><span>ACTIVE</span><strong class="${activeMatches ? 'match' : ''}">${formatNumber(activeMatches)} session${activeMatches === 1 ? '' : 's'}</strong></div>
+                    <div><span>LAST MATCH</span><strong>${escapeHtml(lastMatch)}</strong></div>
+                </div>
+                <div class="account-progress">
+                    <div class="progress-head"><span>POWER LEVEL PROGRESS · ${formatNumber(currentExp)} CURRENT EXP</span><strong>${escapeHtml(progressTarget)}</strong></div>
+                    <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
+                    <div class="progress-meta"><span>LV ${formatNumber(level)} start: <strong>${formatNumber(acc.level_exp_start || 0)} EXP</strong></span><span><strong>${escapeHtml(progressRemaining)}</strong></span></div>
+                </div>
+            </article>`;
+        }).join('');
+    }
+    function renderLogs(logs) {
+        currentLogs = Array.isArray(logs) ? logs : [];
+        const filter = $('#log-filter').value;
+        const visible = currentLogs.filter((log) => filter === 'all' || String(log.level || 'info') === filter);
+        $('#log-count').textContent = `${currentLogs.length} events`;
+        $('#log-stream').innerHTML = visible.length ? visible.map((log) => `<div class="log-line"><span class="log-time">${escapeHtml(log.time || '--:--:--')}</span><span class="log-tag ${escapeHtml(log.level || 'info')}">${escapeHtml(String(log.level || 'info').toUpperCase())}</span><span class="log-message">${escapeHtml(log.message || '')}</span></div>`).join('') : '<div style="color:var(--dim)">No events for this filter.</div>';
+        $('#log-stream').scrollTop = $('#log-stream').scrollHeight;
+    }
+    function renderStats(data) {
+        const accounts = Array.isArray(data.accounts) ? data.accounts : [];
+        const onlineCount = accounts.filter((account) => ['ONLINE', 'IN_MATCH', 'SEARCHING', 'CONNECTING', 'BERMUDA_READY'].includes(String(account.status || '').toUpperCase())).length;
+        $('#stat-accounts').textContent = formatNumber(data.total_accounts);
+        $('#stat-online').textContent = `${formatNumber(onlineCount)} online`;
+        $('#stat-workers').textContent = `${formatNumber(data.active_workers)} workers`;
+        $('#stat-started').textContent = formatNumber(data.total_matches_started);
+        const uptimeHours = Math.max(1 / 60, Number(data.uptime || 0) / 3600);
+        $('#stat-start-rate').textContent = `${formatNumber(Math.round(Number(data.total_matches_started || 0) / uptimeHours))} / hour`;
+        $('#stat-udp').textContent = formatNumber(data.active_udp_matches);
+        $('#stat-exp').textContent = `+${formatNumber(data.total_gained_exp)}`;
+        $('#stat-matches').textContent = `${formatNumber(data.total_matches)} matches`;
+        $('#stat-uptime').textContent = formatUptime(data.uptime);
+        $('#network-udp').textContent = Number(data.active_udp_matches || 0) ? `${formatNumber(data.active_udp_matches)} ACTIVE` : 'STANDBY';
+        $('#network-workers').textContent = formatNumber(data.active_workers);
+        $('#network-uptime').textContent = formatUptime(data.uptime);
+        $('#last-sync').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+        const running = Boolean(data.service_running);
+        const mode = data.game_mode || 'lone_wolf';
+        $('#runtime-state').textContent = running ? 'RUNNING' : 'STOPPED';
+        $('#runtime-state').className = `pill ${running ? 'live' : ''}`;
+        $('#control-state').textContent = running ? 'Running' : 'Stopped';
+        $('#control-workers').textContent = `${formatNumber(data.active_workers)} workers`;
+        $('#run-bot').disabled = running;
+        $('#stop-bot').disabled = !running;
+        $('#game-mode').value = mode;
+        $('#mode-note').textContent = mode === 'bermuda'
+            ? 'Bermuda session adapter is active for login, heartbeat and profile telemetry.'
+            : 'Lone Wolf matchmaking is enabled for the active account fleet.';
+        renderAccounts(accounts); renderLogs(data.logs);
+        lastLogCursor = Number(data.log_cursor || lastLogCursor);
+    }
+    async function fetchStats(silent = false) {
+        try {
+            const response = await fetch('/api/stats', {cache: 'no-store'});
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            renderStats(await response.json()); setConnection(true);
+        } catch (error) {
+            setConnection(false);
+            if (!silent) showToast('Dashboard connection lost. Retrying…', 'error');
+            console.warn('Stats request failed', error);
+        }
+    }
+    async function fetchDevices() {
+        try {
+            const response = await fetch('/api/devices', {cache: 'no-store'});
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            const profiles = Array.isArray(data.profiles) ? data.profiles : [];
+            $('#device-count').textContent = `${profiles.length} profiles`;
+            $('#device-container').innerHTML = profiles.length ? profiles.map((device) => `
+                <article class="device-item">
+                    <strong>${escapeHtml(device.brand)} ${escapeHtml(device.model)}</strong>
+                    <span>ACCOUNT ${escapeHtml(device.account_id)}</span>
+                    <span>${escapeHtml(device.system_software)} · ${formatNumber(device.memory)} MB</span>
+                    <small>${escapeHtml(device.screen_width)} × ${escapeHtml(device.screen_height)} display</small>
+                </article>`).join('') : '<div class="empty"><div>No device profiles saved yet.</div></div>';
+        } catch (error) {
+            $('#device-container').innerHTML = '<div class="empty"><div>Device profiles unavailable.</div></div>';
+        }
+    }
+    async function botAction(url, body, successMessage) {
+        try {
+            const response = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body || {})});
+            const result = await response.json();
+            if (!response.ok || result.status !== 'ok') throw new Error(result.error || 'Control request failed');
+            showToast(successMessage);
+            await fetchStats(true);
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    async function saveDevice(event) {
+        event.preventDefault();
+        const payload = {
+            account_id: $('#device-account').value.trim(),
+            brand: $('#device-brand').value.trim(),
+            model: $('#device-model').value.trim(),
+            system_software: $('#device-os').value.trim()
+        };
+        if (!payload.account_id || !payload.brand || !payload.model) {
+            showToast('Complete the device profile fields first.', 'error');
+            return;
+        }
+        try {
+            const response = await fetch('/api/device/add', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+            const result = await response.json();
+            if (!response.ok || result.status !== 'ok') throw new Error(result.error || 'Could not save device profile');
+            closeDeviceModal();
+            showToast('Device profile saved.');
+            await fetchDevices();
+        } catch (error) {
+            showToast(error.message, 'error');
+        }
+    }
+    function openModal() { $('#modal').classList.add('open'); setTimeout(() => $('#account-type').focus(), 50); }
+    function closeModal() { $('#modal').classList.remove('open'); $('#account-form').reset(); toggleFields(); }
+    function openDeviceModal() { $('#device-modal').classList.add('open'); setTimeout(() => $('#device-account').focus(), 50); }
+    function closeDeviceModal() { $('#device-modal').classList.remove('open'); $('#device-form').reset(); $('#device-os').value = 'Android OS 14 / API-34'; }
+    function toggleFields() { const token = $('#account-type').value === 'token'; $('#guest-fields').style.display = token ? 'none' : 'block'; $('#token-field').style.display = token ? 'block' : 'none'; }
+    async function submitAccount(event) {
+        event.preventDefault();
+        const isToken = $('#account-type').value === 'token';
+        const payload = isToken ? {token: $('#account-token').value.trim()} : {uid: $('#account-uid').value.trim(), password: $('#account-password').value.trim()};
+        if ((isToken && !payload.token) || (!isToken && (!payload.uid || !payload.password))) { showToast('Complete all required fields first.', 'error'); return; }
+        try {
+            const response = await fetch('/api/account/add', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+            const result = await response.json();
+            if (result.status !== 'ok') throw new Error(result.error || 'Unable to save account');
+            closeModal(); showToast('Account saved. Worker startup queued.'); await fetchStats();
+        } catch (error) { showToast(error.message, 'error'); }
+    }
+    async function accountAction(url, uid, message) {
+        try {
+            const response = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({uid})});
+            const result = await response.json(); if (result.status !== 'ok') throw new Error(result.error || 'Request failed');
+            showToast(message); await fetchStats(true);
+        } catch (error) { showToast(error.message, 'error'); }
+    }
+    $('#add-btn').addEventListener('click', openModal); $('#close-modal').addEventListener('click', closeModal); $('#cancel-modal').addEventListener('click', closeModal);
+    $('#modal').addEventListener('click', (event) => { if (event.target === $('#modal')) closeModal(); });
+    $('#account-type').addEventListener('change', toggleFields); $('#account-form').addEventListener('submit', submitAccount);
+    $('#refresh-btn').addEventListener('click', () => fetchStats()); $('#account-refresh').addEventListener('click', () => fetchStats());
+    $('#run-bot').addEventListener('click', () => botAction('/api/bot/start', {mode: $('#game-mode').value}, 'Bot workers started.'));
+    $('#stop-bot').addEventListener('click', () => botAction('/api/bot/stop', {}, 'Bot workers stopped.'));
+    $('#game-mode').addEventListener('change', () => botAction('/api/mode', {mode: $('#game-mode').value}, 'Game mode updated.'));
+    $('#log-filter').addEventListener('change', () => renderLogs(currentLogs));
+    $('#accounts-container').addEventListener('click', (event) => {
+        const button = event.target.closest('button'); if (!button) return;
+        const uid = button.dataset.uid; if (button.classList.contains('refresh-account')) accountAction('/api/account/refresh', uid, 'Profile refresh queued.');
+        if (button.classList.contains('start-account')) accountAction('/api/account/start', uid, 'Account worker started.');
+        if (button.classList.contains('stop-account')) accountAction('/api/account/stop', uid, 'Account worker stopped.');
+        if (button.classList.contains('delete-account') && confirm(`Remove account ${uid} from rotation?`)) accountAction('/api/account/delete', uid, 'Account removed from rotation.');
+    });
+    $('#clear-logs').addEventListener('click', async () => { try { await fetch('/api/logs/clear', {method: 'POST'}); await fetchStats(true); showToast('Terminal buffer cleared.'); } catch (error) { showToast('Could not clear terminal.', 'error'); } });
+    $('#copy-logs').addEventListener('click', async () => { const text = currentLogs.map((log) => `[${log.time}] ${String(log.level || 'info').toUpperCase()} ${log.message}`).join('\n'); try { await navigator.clipboard.writeText(text); showToast('Terminal log copied.'); } catch { showToast('Clipboard access unavailable.', 'error'); } });
+    $('#device-refresh').addEventListener('click', fetchDevices);
+    $('#add-device').addEventListener('click', openDeviceModal); $('#close-device-modal').addEventListener('click', closeDeviceModal); $('#cancel-device-modal').addEventListener('click', closeDeviceModal);
+    $('#device-modal').addEventListener('click', (event) => { if (event.target === $('#device-modal')) closeDeviceModal(); });
+    $('#device-form').addEventListener('submit', saveDevice);
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { closeModal(); closeDeviceModal(); } if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); openModal(); } });
+    toggleFields(); fetchStats(); fetchDevices(); setInterval(() => fetchStats(true), 1000); setInterval(fetchDevices, 10000);
+</script>
+</body>
+</html>
